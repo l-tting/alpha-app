@@ -13,12 +13,13 @@
     <div class="container" id="app">
         <h3>My Sales</h3>
         <form action="" @submit.prevent="make_sale">
-            <select name="">
+            <select v-model="SaleData.pid">
                 <option >Select Option</option>
-                <option v-for="product in products" :key="product.id">{{product.name}}</option>
+                <option >Select Option</option>
+                <option v-for="product in products" :key="product.id" :value="product.id">{{product.name}}</option>
             </select>
-            <input type="number" placeholder="Quantity">
-            <input type="submit" value="Make Sale">
+            <input type="number" placeholder="Quantity" v-model="SaleData.quantity">
+            <button type="submit">Make Sale</button>
         </form>
         <div class="table">
             <table class="table" style="margin-top: 6%;">
@@ -36,7 +37,7 @@
                     <tr v-for="sale in sales" :key="sale.id">
 
                         <td> {{ sale.id }} </td>
-                        <td>{{ sale.pid }} </td>
+                        <td>{{ sale.product }} </td>
                         <td>{{ sale.quantity }}</td>
                         <td>{{sale.created_at}}</td>
 
@@ -60,7 +61,7 @@
                     products: [],
                     sales: [],
                     SaleData :{
-                        id : null,
+                        pid : null,
                         quantity: null
                     }
                 }
@@ -82,18 +83,18 @@
 
                     try {
                         const response = await axios.get('http://127.0.0.1:5000/sales')
-                        this.fetch_sales = response.data.sales
+                        this.sales = response.data.sales
                         console.log(this.sales);
                     }
                     catch (error) {
                         console.log("error", error)
                     }
                 },
-                make_sale() {
+                 make_sale() {
                     try {
-                        axios.post('http://127.0.0.1:5000/sales', this.SaleData)
+                        axios.post('http://127.0.0.1:5000/sales', this.SaleData);
                     } catch (error) {
-                        console.log("error adding product..", error)
+                        console.log("error adding sale..", error)
                     }
                 }
 
@@ -101,6 +102,8 @@
             created() {
                 this.fetch_products()
                 this.fetch_sales()
+                this.make_sale()
+
             }
         }).mount('#app');
     </script>
