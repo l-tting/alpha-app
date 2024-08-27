@@ -38,18 +38,18 @@
                         this.profit_data = response.data.profit_per_day
                         console.log("Sales data", this.sales_data)
                         console.log("Profit data", this.profit_data)
-                        this.bar_chart()
+                        this.line_chart()
 
                     } catch (error) {
                         console.log("Error fetching data", error)
                     }
                 },
 
-                bar_chart() {
+                line_chart() {
                     const ctx = document.getElementById('myChart').getContext('2d');
                     const ctv = document.getElementById('thischart').getContext('2d');
                     new Chart(ctx, {
-                        type: 'bar',
+                        type: 'line',
                         data: {
                             labels: this.sales_data.map(item => item.date),
                             datasets: [{
@@ -67,7 +67,7 @@
                         }
                     });
                     new Chart(ctv, {
-                        type: 'bar',
+                        type: 'line',
                         data: {
                             labels: this.profit_data.map(item=>item.date),
                             datasets: [{
