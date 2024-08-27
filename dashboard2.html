@@ -24,50 +24,42 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         Vue.createApp({
-            data(){
-                return{
-                    sales_data:[],
-                    url:"http://127.0.0.1:5000/"
+            data() {
+                return {
+                    sales_data: [],
+                    url: "http://127.0.0.1:5000/"
                 }
             },
-            methods:{
-                line_chart(){
-                    try{
-
-                       axios.get(this.url + "dashboard")
-                       .then((response)=>{
-                         this.sales_data = response.data.sales_per_day
-                         console.log(this.sales_data)
-                         
-                       })
+            methods: {
+                async line_chart() {
+                    try {
+                        const response = await axios.get(this.url + "dashboard")
+                        this.sales_data = response.data.sales_per_day
+                        console.log(this.sales_data)
                         // giving the canvas element a 2d context
                         var ctx = document.getElementById('mychart').getContext('2d')
                         // create a new chart instance
-                        new Chart(ctx,{
+                        new Chart(ctx, {
                             //configuration object - defines appearance and behaviour of your chart
                             type: 'line',
-                            data:{
-                               labels:this.sales_data.map(item=>item.date),
-                               datasets :[{
-                                    label:"Sales",
-                                    data:this.sales_data.map(item=>item.total_sales)
-                               }]
-                            
-                            }
+                            data: {
+                                labels: this.sales_data.map(item => item.date),
+                                datasets: [{
+                                    label: "Sales",
+                                    data: this.sales_data.map(item => item.total_sales)
+                                }]
 
-                        
+                            }
                         })
 
-                    }catch(error){
-                        console.log("Error displaying chart",error)
+                    } catch (error) {
+                        console.log("Error displaying chart", error)
                     }
                 }
-
             },
-            mounted(){
+            mounted() {
                 this.line_chart()
             }
-
         }).mount("#alpha")
     </script>
 </body>
