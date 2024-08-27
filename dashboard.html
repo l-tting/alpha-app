@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container" id="chart">
+        <div>
+            <h1>sales per day</h1>
+            <canvas id="myChart" height="50px"></canvas>
+        </div>
+        <div>
+            <h1>Profit per day</h1>
+            <canvas id="thischart" height="50px"></canvas>
+        </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    sales_data: [],
+                    profit_data: [],
+                    url: 'http://127.0.0.1:5000/'
+                }
+            },
+            methods: {
+                async fetch_data() {
+                    try {
+                        const response = await axios.get(this.url + "dashboard");
+                        this.sales_data = response.data.sales_per_day
+                        this.profit_data = response.data.profit_per_day
+                        console.log("Sales data", this.sales_data)
+                        console.log("Profit data", this.profit_data)
+                        this.bar_chart()
+
+                    } catch (error) {
+                        console.log("Error fetching data", error)
+                    }
+                },
+
+                bar_chart() {
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const ctv = document.getElementById('thischart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: this.sales_data.map(item => item.date),
+                            datasets: [{
+                                label: 'sales_per_day',
+                                data: this.sales_data.map(item => item.total_sales),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                    new Chart(ctv, {
+                        type: 'bar',
+                        data: {
+                            labels: this.profit_data.map(item=>item.date),
+                            datasets: [{
+                                label: 'profit_per_day',
+                                data: this.profit_data.map(item=>item.profit),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+            },
+            mounted() {
+
+                this.fetch_data()
+            }
+        }).mount("#chart")
+    </script>
+</body>
+
+</html>
