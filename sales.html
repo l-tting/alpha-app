@@ -14,11 +14,12 @@
         <h3>My Sales</h3>
         <form action="" @submit.prevent="make_sale">
             <select v-model="SaleData.pid">
+
                 <option >Select Option</option>
-                <option >Select Option</option>
+                
                 <option v-for="product in products" :key="product.id" :value="product.id">{{product.name}}</option>
             </select>
-            <input type="number" placeholder="Quantity" v-model="SaleData.quantity">
+            <input type="number" placeholder="Quantity" v-model="SaleData.quantity" required>
             <button type="submit">Make Sale</button>
         </form>
         <div class="table">
@@ -65,14 +66,17 @@
                         quantity: null
                     }
                 }
-
             },
             methods: {
                 async fetch_products() {
-
                     try {
-                        const response = await axios.get('http://127.0.0.1:5000/product')
-//
+                        const token = localStorage.getItem('access_token')
+                        console.log(token)
+                        const response = await axios.get('http://127.0.0.1:5000/product',{
+                            headers:{
+                                Authorization :`${token}`
+                            }             
+                        })   
                         this.products = response.data.products
                         console.log(this.products);
                     }
@@ -81,9 +85,14 @@
                     }
                 },
                 async fetch_sales() {
-
                     try {
-                        const response = await axios.get('http://127.0.0.1:5000/sales')
+                        token = localStorage.getItem('access_token')
+                        const response = await axios.get('http://127.0.0.1:5000/sales',{
+                            headers:{
+                                Authorization:`${token}`
+                            }
+                            })
+                        console.log("sales",response)
                         this.sales = response.data.sales
                         console.log(this.sales);
                     }
@@ -98,7 +107,6 @@
                         console.log("error adding sale..", error)
                     }
                 }
-
             },
             created() {
                 this.fetch_products()
