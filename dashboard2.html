@@ -7,21 +7,26 @@
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Morris.js CSS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
 </head>
 
 <body>
     <div class="container" id="alpha">
         <div style="background-color: beige;">
-            <canvas id="mychart"></canvas>
+            <div id="mychart" style="height: 250px;"></div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Raphael.js -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <!-- Morris.js -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <script>
         Vue.createApp({
             data() {
@@ -33,34 +38,30 @@
             methods: {
                 async line_chart() {
                     try {
-                        const response = await axios.get(this.url + "dashboard")
-                        this.sales_data = response.data.sales_per_day
-                        console.log(this.sales_data)
-                        // giving the canvas element a 2d context
-                        var ctx = document.getElementById('mychart').getContext('2d')
-                        // create a new chart instance
-                        new Chart(ctx, {
-                            //configuration object - defines appearance and behaviour of your chart
-                            type: 'line',
-                            data: {
-                                labels: this.sales_data.map(item => item.date),
-                                datasets: [{
-                                    label: "Sales",
-                                    data: this.sales_data.map(item => item.total_sales)
-                                }]
+                        const response = await axios.get(this.url + "dashboard");
+                        this.sales_data = response.data.sales_per_day;
+                        console.log(this.sales_data);
 
-                            }
-                        })
+                        // Create a new Morris line chart
+                        new Morris.Line({
+                            element: 'mychart',
+                            data: this.sales_data,
+                            xkey: 'date',
+                            ykeys: ['total_sales'],
+                            labels: ['Sales'],
+                            lineColors: ['#0b62a4'],
+                            resize: true
+                        });
 
                     } catch (error) {
-                        console.log("Error displaying chart", error)
+                        console.log("Error displaying chart", error);
                     }
                 }
             },
             mounted() {
-                this.line_chart()
+                this.line_chart();
             }
-        }).mount("#alpha")
+        }).mount("#alpha");
     </script>
 </body>
 
